@@ -9,9 +9,9 @@ run(@build_steps begin
     ChangeDirectory(Pkg2.Dir.path("HttpParser"))
     FileRule("deps/src/http-parser/Makefile",`git submodule update --init`)
     FileRule(target,@build_steps begin
-        ChangeDirectory(Pkg2.Dir.path("HttpParser","deps","src"))
+        ChangeDirectory(Pkg2.Dir.path("HttpParser","deps","src","http-parser"))
         CreateDirectory(dirname(target))
-        MakeTargets(["-C","http-parser","library"])
-        `cp http-parser/libhttp_parser.so $target`
+        `make library`
+        `cp libhttp_parser.so $target`
     end)
 end)
