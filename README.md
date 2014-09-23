@@ -1,6 +1,6 @@
 # HttpParser.jl
 
-This package provides a Julia wrapper around Joyent's [http-parser](https://github.com/joyent/http-parser) library.
+This package provides a Julia wrapper around Joyent's [`http-parser`](https://github.com/joyent/http-parser) library. The currently supported version of `http-parser` is `v2.3`.
 
 [![Build Status](https://travis-ci.org/JuliaWeb/HttpParser.jl.png)](https://travis-ci.org/JuliaWeb/HttpParser.jl)
 [![Coverage Status](https://coveralls.io/repos/JuliaWeb/HttpParser.jl/badge.png)](https://coveralls.io/r/JuliaWeb/HttpParser.jl)
