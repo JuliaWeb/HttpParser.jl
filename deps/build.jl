@@ -10,24 +10,29 @@ aliases = []
         aliases = ["libhttp_parser32"]
     end
 end
-
 libhttp_parser = library_dependency("libhttp_parser", aliases=aliases)
 
 @unix_only begin
-    depsdir = joinpath(Pkg.dir(),"HttpParser","deps")
-    prefix=joinpath(depsdir,"usr")
-    uprefix = replace(replace(prefix,"\\","/"),"C:/","/c/")
-    target = joinpath(prefix,"lib/libhttp_parser.$(BinDeps.shlib_ext)")
+    # Get source
+    cd(Pkg.dir("HttpParser","deps"))
+    isdir("src") && run(`rm -rf src`)
+    mkdir("src"); cd("src")
+    run(`git clone https://github.com/joyent/http-parser.git`)
+    cd("http-parser")
+    run(`git checkout v2.3`)
+
+    # Where the library will go
+    target = joinpath(Pkg.dir("HttpParser","deps","usr","lib"),
+                        "libhttp_parser.$(BinDeps.shlib_ext)")
 
     provides(SimpleBuild,
         (@build_steps begin
-            ChangeDirectory(Pkg.Dir.path("HttpParser"))
-            FileRule("deps/src/http-parser/Makefile",`git submodule update --init`)
-            FileRule(target,@build_steps begin
-                ChangeDirectory(Pkg.Dir.path("HttpParser","deps","src"))
-                CreateDirectory(dirname(target))
+            ChangeDirectory(Pkg.dir("HttpParser"))
+            FileRule(target, @build_steps begin
+                ChangeDirectory(Pkg.dir("HttpParser","deps","src"))
+                CreateDirectory(Pkg.dir("HttpParser","deps","usr","lib"))
                 MakeTargets(["-C","http-parser","library"])
-                `cp http-parser/libhttp_parser.so $target`
+                `cp http-parser/libhttp_parser.so.2.3 $target`
             end)
         end),[libhttp_parser], os = :Unix)
 end
