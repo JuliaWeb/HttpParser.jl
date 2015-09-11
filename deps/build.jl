@@ -37,8 +37,15 @@ end
 @windows_only begin
     provides(Binaries,
          URI("https://julialang.s3.amazonaws.com/bin/winnt/extras/libhttp_parser.zip"),
-         libhttp_parser, os = :Windows)
+         libhttp_parser, os = :Windows, sha="1ab627acab92b0862da96a73a4dea8494e998599629f7f7f9f11852dcf7d5a40")
+end
+
+@osx_only begin
+    if Pkg.installed("Homebrew") === nothing
+        error("Homebrew package not installed, please run Pkg.add(\"Homebrew\")")
+    end
+    using Homebrew
+    provides(Homebrew.HB, "http-parser", libhttp_parser)
 end
 
 @BinDeps.install @compat Dict(:libhttp_parser => :lib)
-
