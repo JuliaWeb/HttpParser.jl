@@ -23,7 +23,28 @@ export Parser,
 # The id pool is used to keep track of incoming requests.
 id_pool = 0
 
-# A composite type that matches bit-for-bit a C struct.
+"""
+`HttpParser.Parser`
+
+A composite type that matches bit-for-bit a C struct.
+
+```
+    type_and_flags::Cuchar
+    state::Cuchar
+    header_state::Cuchar
+    index::Cuchar
+    nread::UInt32
+    content_length::UInt64
+    http_major::Cushort
+    http_minor::Cushort
+    status_code::Cushort
+    method::Cuchar
+    # http_errno + upgrade = Single byte
+    errno_and_upgrade::Cuchar
+    data::Any
+    id::Int
+```
+"""
 type Parser
     # parser + flag = Single byte
     type_and_flags::Cuchar
@@ -66,7 +87,24 @@ Parser() = Parser(
     (global id_pool += 1)
 )
 
-# A composite type that is expecting C functions to be run as callbacks.
+"""
+`HttpParser.ParserSettings`
+
+A composite type that is expecting C functions to be run as callbacks.
+
+Callback fields:
+
+```
+    on_message_begin_cb::Ptr{Void}
+    on_url_cb::Ptr{Void}
+    on_status_complete_cb::Ptr{Void}
+    on_header_field_cb::Ptr{Void}
+    on_header_value_cb::Ptr{Void}
+    on_headers_complete_cb::Ptr{Void}
+    on_body_cb::Ptr{Void}
+    on_message_complete_cb::Ptr{Void}
+```
+"""
 type ParserSettings
     on_message_begin_cb::Ptr{Void}
     on_url_cb::Ptr{Void}
@@ -82,12 +120,20 @@ function show(io::IO,p::Parser)
     print(io,"HttpParser")
 end
 
-# Intializes the Parser object with the correct memory.
+"""
+`HttpParser.http_parser_init(parser::Parser, isserver=true)`
+
+Initializes the Parser object with the correct memory.
+"""
 function http_parser_init(parser::Parser,isserver=true)
     ccall((:http_parser_init, lib), Void, (Ptr{Parser}, Cint), &parser, !isserver)
 end
 
-# Run a request through a parser with specific callbacks on the settings instance.
+"""
+`HttpParser.http_parser_execute(parser::Parser, settings::ParserSettings, request)`
+
+Run a request through a parser with specific callbacks on the settings instance.
+"""
 function http_parser_execute(parser::Parser, settings::ParserSettings, request)
     ccall((:http_parser_execute, lib), Csize_t,
             (Ptr{Parser}, Ptr{ParserSettings}, Ptr{UInt8}, Csize_t,),
@@ -97,17 +143,37 @@ function http_parser_execute(parser::Parser, settings::ParserSettings, request)
     end
 end
 
-# Return a String representation of a given an HTTP method.
+"""
+`HttpParser.http_method_str(method::Int)`
+
+Return a string representation of a given HTTP method.
+"""
 function http_method_str(method::Int)
     val = ccall((:http_method_str, lib), Ptr{UInt8}, (Int,), method)
     return bytestring(val)
 end
 
-# Is the request a keep-alive request?
+"""
+`HttpParser.http_should_keep_alive(parser::Ptr{Parser})`
+
+Is the HTTP request a keep-alive request?
+
+Returns a `Bool`.
+"""
 function http_should_keep_alive(parser::Ptr{Parser})
     ccall((:http_should_keep_alive, lib), Int, (Ptr{Parser},), parser)
 end
+
+"""
+`HttpParser.upgrade(p::Parser)`
+
+Did the HTTP request ask for an upgrade to a different protocol?
+ (e.g. `WebSocket`)
+ 
+Returns a `Bool`.
+"""
 upgrade(p::Parser) = (p.errno_and_upgrade & 0b10000000)>0
+
 errno(p::Parser) = p.errno_and_upgrade & 0b01111111
 errno_name(errno::Integer) = bytestring(ccall((:http_errno_name,lib),Ptr{UInt8},(Int32,),errno))
 errno_description(errno::Integer) = bytestring(ccall((:http_errno_description,lib),Ptr{UInt8},(Int32,),errno))
