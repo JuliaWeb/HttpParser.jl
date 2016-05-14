@@ -85,27 +85,34 @@ type ParserSettings
     on_message_complete_cb::Ptr{Void}
     on_chunk_header::Ptr{Void}
     on_chunk_complete::Ptr{Void}
-end
 
-function ParserSettings(on_message_begin_cb::Ptr{Void},
-  on_url_cb::Ptr{Void},
-  on_status_complete_cb::Ptr{Void},
-  on_header_field_cb::Ptr{Void},
-  on_header_value_cb::Ptr{Void},
-  on_headers_complete_cb::Ptr{Void},
-  on_body_cb::Ptr{Void},
-  on_message_complete_cb::Ptr{Void})
-    Base.depwarn("ParserSettings(on_url_cb, on_status_complete_cb, "
-            * " on_header_field_cb, on_header_value_cb, on_header_value_cb,"
-            * " on_headers_complete_cb, on_body_cb, on_message_complete_cb)"
-            * " is deprecated use ParserSettings(on_url_cb, on_status_complete_cb, "
-            * " on_header_field_cb, on_header_value_cb, on_header_value_cb,"
-            * " on_headers_complete_cb, on_body_cb, on_message_complete_cb,"
-            * " on_chunk_header, on_chunk_complete)", :ParserSettings)
-    dummy_cb = cfunction((parser) -> 0, HTTP_CB...)
-    ParserSettings(on_message_begin_cb, on_url_cb, on_status_complete_cb,
-      on_header_field_cb, on_header_value_cb, on_headers_complete_cb,
-      on_body_cb, on_message_complete_cb, dummy_cb, dummy_cb)
+    function ParserSettings(
+      on_message_begin_cb::Ptr{Void} = Ptr{Void}(0),
+      on_url_cb::Ptr{Void} = Ptr{Void}(0),
+      on_status_complete_cb::Ptr{Void} = Ptr{Void}(0),
+      on_header_field_cb::Ptr{Void} = Ptr{Void}(0),
+      on_header_value_cb::Ptr{Void} = Ptr{Void}(0),
+      on_headers_complete_cb::Ptr{Void} = Ptr{Void}(0),
+      on_body_cb::Ptr{Void} = Ptr{Void}(0),
+      on_message_complete_cb::Ptr{Void} = Ptr{Void}(0),
+      on_chunk_header::Ptr{Void} = Ptr{Void}(0),
+      on_chunk_complete::Ptr{Void} = Ptr{Void}(0))
+        function dummy(parser)
+          0
+        end
+        dummy_cb = cfunction(dummy, HTTP_CB...)
+        new(
+          on_message_begin_cb == Ptr{Void}(0) ? dummy_cb : on_message_begin_cb,
+          on_url_cb == Ptr{Void}(0) ? dummy_cb : on_url_cb,
+          on_status_complete_cb == Ptr{Void}(0) ? dummy_cb : on_status_complete_cb,
+          on_header_field_cb == Ptr{Void}(0) ? dummy_cb : on_header_field_cb,
+          on_header_value_cb == Ptr{Void}(0) ? dummy_cb : on_header_value_cb,
+          on_headers_complete_cb == Ptr{Void}(0) ? dummy_cb : on_headers_complete_cb,
+          on_body_cb == Ptr{Void}(0) ? dummy_cb : on_body_cb,
+          on_message_complete_cb == Ptr{Void}(0) ? dummy_cb : on_message_complete_cb,
+          on_chunk_header == Ptr{Void}(0) ? dummy_cb : on_chunk_header,
+          on_chunk_complete == Ptr{Void}(0) ? dummy_cb : on_chunk_complete)
+    end
 end
 
 function show(io::IO,p::Parser)
