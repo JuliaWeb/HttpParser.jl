@@ -87,6 +87,14 @@ type ParserSettings
     on_chunk_complete::Ptr{Void}
 end
 
+function dummy(parser)
+  0
+end
+
+function dummy_data(parser, at, len)
+  0
+end
+
 function ParserSettings(on_message_begin_cb::Ptr{Void},
   on_url_cb::Ptr{Void},
   on_status_complete_cb::Ptr{Void},
@@ -102,9 +110,6 @@ function ParserSettings(on_message_begin_cb::Ptr{Void},
             * " on_header_field_cb, on_header_value_cb, on_header_value_cb,"
             * " on_headers_complete_cb, on_body_cb, on_message_complete_cb,"
             * " on_chunk_header, on_chunk_complete)", :ParserSettings)
-    function dummy(parser)
-      0
-    end
     dummy_cb = cfunction(dummy, HTTP_CB...)
     ParserSettings(on_message_begin_cb, on_url_cb, on_status_complete_cb,
       on_header_field_cb, on_header_value_cb, on_headers_complete_cb,
@@ -122,11 +127,8 @@ function ParserSettings(;
   on_message_complete_cb::Ptr{Void} = C_NULL,
   on_chunk_header::Ptr{Void} = C_NULL,
   on_chunk_complete::Ptr{Void} = C_NULL)
-    function dummy(x...)
-      0
-    end
     dummy_cb = cfunction(dummy, HTTP_CB...)
-    dummy_data_cb = cfunction(dummy, HTTP_DATA_CB...)
+    dummy_data_cb = cfunction(dummy_data, HTTP_DATA_CB...)
     ParserSettings(
       on_message_begin_cb == C_NULL ? dummy_cb : on_message_begin_cb,
       on_url_cb == C_NULL ? dummy_data_cb : on_url_cb,
