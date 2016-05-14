@@ -87,31 +87,31 @@ type ParserSettings
     on_chunk_complete::Ptr{Void}
 
     function ParserSettings(
-      on_message_begin_cb::Ptr{Void} = Ptr{Void}(0),
-      on_url_cb::Ptr{Void} = Ptr{Void}(0),
-      on_status_complete_cb::Ptr{Void} = Ptr{Void}(0),
-      on_header_field_cb::Ptr{Void} = Ptr{Void}(0),
-      on_header_value_cb::Ptr{Void} = Ptr{Void}(0),
-      on_headers_complete_cb::Ptr{Void} = Ptr{Void}(0),
-      on_body_cb::Ptr{Void} = Ptr{Void}(0),
-      on_message_complete_cb::Ptr{Void} = Ptr{Void}(0),
-      on_chunk_header::Ptr{Void} = Ptr{Void}(0),
-      on_chunk_complete::Ptr{Void} = Ptr{Void}(0))
+      on_message_begin_cb::Ptr{Void} = C_NULL,
+      on_url_cb::Ptr{Void} = C_NULL,
+      on_status_complete_cb::Ptr{Void} = C_NULL,
+      on_header_field_cb::Ptr{Void} = C_NULL,
+      on_header_value_cb::Ptr{Void} = C_NULL,
+      on_headers_complete_cb::Ptr{Void} = C_NULL,
+      on_body_cb::Ptr{Void} = C_NULL,
+      on_message_complete_cb::Ptr{Void} = C_NULL,
+      on_chunk_header::Ptr{Void} = C_NULL,
+      on_chunk_complete::Ptr{Void} = C_NULL)
         function dummy(parser)
           0
         end
         dummy_cb = cfunction(dummy, HTTP_CB...)
         new(
-          on_message_begin_cb == Ptr{Void}(0) ? dummy_cb : on_message_begin_cb,
-          on_url_cb == Ptr{Void}(0) ? dummy_cb : on_url_cb,
-          on_status_complete_cb == Ptr{Void}(0) ? dummy_cb : on_status_complete_cb,
-          on_header_field_cb == Ptr{Void}(0) ? dummy_cb : on_header_field_cb,
-          on_header_value_cb == Ptr{Void}(0) ? dummy_cb : on_header_value_cb,
-          on_headers_complete_cb == Ptr{Void}(0) ? dummy_cb : on_headers_complete_cb,
-          on_body_cb == Ptr{Void}(0) ? dummy_cb : on_body_cb,
-          on_message_complete_cb == Ptr{Void}(0) ? dummy_cb : on_message_complete_cb,
-          on_chunk_header == Ptr{Void}(0) ? dummy_cb : on_chunk_header,
-          on_chunk_complete == Ptr{Void}(0) ? dummy_cb : on_chunk_complete)
+          on_message_begin_cb == C_NULL ? dummy_cb : on_message_begin_cb,
+          on_url_cb == C_NULL ? dummy_cb : on_url_cb,
+          on_status_complete_cb == C_NULL ? dummy_cb : on_status_complete_cb,
+          on_header_field_cb == C_NULL ? dummy_cb : on_header_field_cb,
+          on_header_value_cb == C_NULL ? dummy_cb : on_header_value_cb,
+          on_headers_complete_cb == C_NULL ? dummy_cb : on_headers_complete_cb,
+          on_body_cb == C_NULL ? dummy_cb : on_body_cb,
+          on_message_complete_cb == C_NULL ? dummy_cb : on_message_complete_cb,
+          on_chunk_header == C_NULL ? dummy_cb : on_chunk_header,
+          on_chunk_complete == C_NULL ? dummy_cb : on_chunk_complete)
     end
 end
 
