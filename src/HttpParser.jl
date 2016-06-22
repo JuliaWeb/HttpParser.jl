@@ -88,58 +88,58 @@ type ParserSettings
 end
 
 function dummy(parser)
-  0
+    0
 end
 
 function dummy_data(parser, at, len)
-  0
+    0
 end
 
 function ParserSettings(on_message_begin_cb::Ptr{Void},
-  on_url_cb::Ptr{Void},
-  on_status_complete_cb::Ptr{Void},
-  on_header_field_cb::Ptr{Void},
-  on_header_value_cb::Ptr{Void},
-  on_headers_complete_cb::Ptr{Void},
-  on_body_cb::Ptr{Void},
-  on_message_complete_cb::Ptr{Void})
+    on_url_cb::Ptr{Void},
+    on_status_complete_cb::Ptr{Void},
+    on_header_field_cb::Ptr{Void},
+    on_header_value_cb::Ptr{Void},
+    on_headers_complete_cb::Ptr{Void},
+    on_body_cb::Ptr{Void},
+    on_message_complete_cb::Ptr{Void})
     Base.depwarn("ParserSettings(on_url_cb, on_status_complete_cb, "
-            * " on_header_field_cb, on_header_value_cb, on_header_value_cb,"
-            * " on_headers_complete_cb, on_body_cb, on_message_complete_cb)"
-            * " is deprecated use ParserSettings(on_url_cb, on_status_complete_cb, "
-            * " on_header_field_cb, on_header_value_cb, on_header_value_cb,"
-            * " on_headers_complete_cb, on_body_cb, on_message_complete_cb,"
-            * " on_chunk_header, on_chunk_complete)", :ParserSettings)
+               * " on_header_field_cb, on_header_value_cb, on_header_value_cb,"
+               * " on_headers_complete_cb, on_body_cb, on_message_complete_cb)"
+               * " is deprecated use ParserSettings(on_url_cb, on_status_complete_cb, "
+               * " on_header_field_cb, on_header_value_cb, on_header_value_cb,"
+               * " on_headers_complete_cb, on_body_cb, on_message_complete_cb,"
+               * " on_chunk_header, on_chunk_complete)", :ParserSettings)
     dummy_cb = cfunction(dummy, HTTP_CB...)
     ParserSettings(on_message_begin_cb, on_url_cb, on_status_complete_cb,
-      on_header_field_cb, on_header_value_cb, on_headers_complete_cb,
-      on_body_cb, on_message_complete_cb, dummy_cb, dummy_cb)
+        on_header_field_cb, on_header_value_cb, on_headers_complete_cb,
+        on_body_cb, on_message_complete_cb, dummy_cb, dummy_cb)
 end
 
 function ParserSettings(;
-  on_message_begin_cb::Ptr{Void} = C_NULL,
-  on_url_cb::Ptr{Void} = C_NULL,
-  on_status_complete_cb::Ptr{Void} = C_NULL,
-  on_header_field_cb::Ptr{Void} = C_NULL,
-  on_header_value_cb::Ptr{Void} = C_NULL,
-  on_headers_complete_cb::Ptr{Void} = C_NULL,
-  on_body_cb::Ptr{Void} = C_NULL,
-  on_message_complete_cb::Ptr{Void} = C_NULL,
-  on_chunk_header::Ptr{Void} = C_NULL,
-  on_chunk_complete::Ptr{Void} = C_NULL)
+    on_message_begin_cb::Ptr{Void} = C_NULL,
+    on_url_cb::Ptr{Void} = C_NULL,
+    on_status_complete_cb::Ptr{Void} = C_NULL,
+    on_header_field_cb::Ptr{Void} = C_NULL,
+    on_header_value_cb::Ptr{Void} = C_NULL,
+    on_headers_complete_cb::Ptr{Void} = C_NULL,
+    on_body_cb::Ptr{Void} = C_NULL,
+    on_message_complete_cb::Ptr{Void} = C_NULL,
+    on_chunk_header::Ptr{Void} = C_NULL,
+    on_chunk_complete::Ptr{Void} = C_NULL)
     dummy_cb = cfunction(dummy, HTTP_CB...)
     dummy_data_cb = cfunction(dummy_data, HTTP_DATA_CB...)
     ParserSettings(
-      on_message_begin_cb == C_NULL ? dummy_cb : on_message_begin_cb,
-      on_url_cb == C_NULL ? dummy_data_cb : on_url_cb,
-      on_status_complete_cb == C_NULL ? dummy_cb : on_status_complete_cb,
-      on_header_field_cb == C_NULL ? dummy_data_cb : on_header_field_cb,
-      on_header_value_cb == C_NULL ? dummy_data_cb : on_header_value_cb,
-      on_headers_complete_cb == C_NULL ? dummy_cb : on_headers_complete_cb,
-      on_body_cb == C_NULL ? dummy_data_cb : on_body_cb,
-      on_message_complete_cb == C_NULL ? dummy_cb : on_message_complete_cb,
-      on_chunk_header == C_NULL ? dummy_cb : on_chunk_header,
-      on_chunk_complete == C_NULL ? dummy_cb : on_chunk_complete)
+        on_message_begin_cb == C_NULL ? dummy_cb : on_message_begin_cb,
+        on_url_cb == C_NULL ? dummy_data_cb : on_url_cb,
+        on_status_complete_cb == C_NULL ? dummy_cb : on_status_complete_cb,
+        on_header_field_cb == C_NULL ? dummy_data_cb : on_header_field_cb,
+        on_header_value_cb == C_NULL ? dummy_data_cb : on_header_value_cb,
+        on_headers_complete_cb == C_NULL ? dummy_cb : on_headers_complete_cb,
+        on_body_cb == C_NULL ? dummy_data_cb : on_body_cb,
+        on_message_complete_cb == C_NULL ? dummy_cb : on_message_complete_cb,
+        on_chunk_header == C_NULL ? dummy_cb : on_chunk_header,
+        on_chunk_complete == C_NULL ? dummy_cb : on_chunk_complete)
 end
 
 function show(io::IO,p::Parser)
