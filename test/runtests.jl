@@ -45,7 +45,7 @@ end
 
 function on_url(parser, at, len)
     # Concatenate the resource for each on_url callback
-    r.resource = string(r.resource, bytestring(convert(Ptr{UInt8}, at), Int(len)))
+    r.resource = string(r.resource, unsafe_string(convert(Ptr{UInt8}, at), Int(len)))
     return 0
 end
 
@@ -54,14 +54,14 @@ function on_status_complete(parser)
 end
 
 function on_header_field(parser, at, len)
-    header = bytestring(convert(Ptr{UInt8}, at), Int(len))
+    header = unsafe_string(convert(Ptr{UInt8}, at), Int(len))
     # set the current header
     r.headers["current_header"] = header
     return 0
 end
 
 function on_header_value(parser, at, len)
-    s = bytestring(convert(Ptr{UInt8}, at), Int(len))
+    s = unsafe_string(convert(Ptr{UInt8}, at), Int(len))
     # once we know we have the header value, that will be the value for current header
     r.headers[r.headers["current_header"]] = s
     # reset current_header
@@ -90,7 +90,7 @@ function on_headers_complete(parser)
 end
 
 function on_body(parser, at, len)
-    append!(r.data, pointer_to_array(convert(Ptr{UInt8}, at), (len,)))
+    append!(r.data, unsafe_wrap(Array, convert(Ptr{UInt8}, at), (len,)))
     return 0
 end
 
@@ -160,7 +160,7 @@ init(MALFORMED)
 init(TWO_CHUNKS_MULT_ZERO_END)
 @test r.method == "POST"
 @test r.resource == "/two_chunks_mult_zero_end"
-@test bytestring(r.data) == "hello world"
+@test Compat.String(r.data) == "hello world"
 # @test r.data == "hello\r\n5 world\r\n6"
 init(WEBSOCK)
 @test r.method == "DELETE"
