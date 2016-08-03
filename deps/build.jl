@@ -32,6 +32,10 @@ libhttp_parser = library_dependency("libhttp_parser", aliases=aliases)
         end),[libhttp_parser], os = :Unix)
 end
 
+@linux_only begin
+    provides(AptGet, Dict("libhttp-parser2.1" => libhttp_parser))
+end
+
 # Windows
 @windows_only begin
     provides(Binaries,
