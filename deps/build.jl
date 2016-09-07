@@ -30,6 +30,11 @@ end
 libhttp_parser = library_dependency("libhttp_parser", aliases=aliases,
                                      validate=validate_httpparser)
 
+if is_apple()
+    using Homebrew
+    provides( Homebrew.HB, "http-parser", libhttp_parser, os = :Darwin )
+end
+
 if is_unix()
     src_arch = "v$version.zip"
     src_url = "https://github.com/nodejs/http-parser/archive/$src_arch"
