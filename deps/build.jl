@@ -35,7 +35,7 @@ if is_unix()
     src_url = "https://github.com/nodejs/http-parser/archive/$src_arch"
     src_dir = "http-parser-$version"
 
-    target = "libhttp_parser.$(BinDeps.shlib_ext)"
+    target = "libhttp_parser.$(Libdl.dlext)"
     targetdwlfile = joinpath(BinDeps.downloadsdir(libhttp_parser),src_arch)
     targetsrcdir = joinpath(BinDeps.srcdir(libhttp_parser),src_dir)
     targetlib    = joinpath(BinDeps.libdir(libhttp_parser),target)
