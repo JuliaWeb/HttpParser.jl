@@ -169,7 +169,7 @@ init(WEBSOCK)
 @test r.resource == "/chat"
 
 # URL Parser
-typealias ParsedUrl Dict{Symbol, AbstractString}
+const ParsedUrl = Dict{Symbol,AbstractString}
 
 @test parse_url("//some_path") == (ParsedUrl(
     :UF_PATH=>"//some_path"
