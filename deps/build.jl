@@ -40,6 +40,18 @@ if is_unix()
     targetsrcdir = joinpath(BinDeps.srcdir(libhttp_parser),src_dir)
     targetlib    = joinpath(BinDeps.libdir(libhttp_parser),target)
 
+    if version == v"2.7.1"
+        patchfile = joinpath(BinDeps.depsdir(libhttp_parser), "patches", "pull-357.patch")
+        filetopatch = joinpath(targetsrcdir, "http_parser.c")
+        try
+            run(pipeline(`cat $patchfile`, `patch --verbose --forward $filetopatch`))
+        catch err
+            println("Patch skipped (see previous messages): ", err)
+        end
+    else
+        warn("Obsolete content in file \"build.jl\"")
+    end
+        
     provides(SimpleBuild,
         (@build_steps begin
             CreateDirectory(BinDeps.downloadsdir(libhttp_parser))
