@@ -1,12 +1,16 @@
 using BinDeps
 using Compat
 
+if VERSION >= v"0.7.0-DEV.3382"
+    using Libdl
+end
+
 @BinDeps.setup
 
 version=v"2.7.1"
 
 aliases = []
-if is_windows()
+if Compat.Sys.iswindows()
     if Sys.WORD_SIZE == 64
         aliases = ["libhttp_parser64"]
     else
@@ -20,7 +24,7 @@ function validate_httpparser(name,handle)
         p = Libdl.dlsym(handle, :http_parser_url_init)
         return p != C_NULL
     catch
-        if is_windows()
+        if Compat.Sys.iswindows()
             warn("Looks like your binary is old. Please run `rm($(sprint(show, joinpath(dirname(@__FILE__), "usr"))); recursive = true)` to delete the old binary and then run `Pkg.build($(sprint(show, "HttpParser")))` again.")
         end
         return false
@@ -30,7 +34,7 @@ end
 libhttp_parser = library_dependency("libhttp_parser", aliases=aliases,
                                      validate=validate_httpparser)
 
-if is_unix()
+if Compat.Sys.isunix()
     src_arch = "v$version.zip"
     src_url = "https://github.com/nodejs/http-parser/archive/$src_arch"
     src_dir = "http-parser-$version"
@@ -62,7 +66,7 @@ if is_unix()
 end
 
 # Windows
-if is_windows()
+if Compat.Sys.iswindows()
     provides(Binaries,
          URI("https://s3.amazonaws.com/julialang/bin/winnt/extras/libhttp_parser_2_7_1.zip"),
          libhttp_parser, os = :Windows)
