@@ -1,5 +1,6 @@
 using BinDeps
-using Compat, Libdl
+using Compat
+using Compat.Libdl
 
 @BinDeps.setup
 
