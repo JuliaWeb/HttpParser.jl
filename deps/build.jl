@@ -15,16 +15,14 @@ if is_windows()
 end
 
 # This API used for validation was introduced in 2.6.0, and there have no API changes between 2.6 and 2.7
-function validate_httpparser(name,handle)
-    try
-        p = Libdl.dlsym(handle, :http_parser_url_init)
-        return p != C_NULL
-    catch
-        if is_windows()
-            warn("Looks like your binary is old. Please run `rm($(sprint(show, joinpath(dirname(@__FILE__), "usr"))); recursive = true)` to delete the old binary and then run `Pkg.build($(sprint(show, "HttpParser")))` again.")
-        end
+function validate_httpparser(name, handle)
+    handle == C_NULL && return false
+    p = Libdl.dlsym_e(handle, :http_parser_url_init)
+    if p == C_NULL
+        is_windows() && warn("Looks like your binary is old. Please run `rm($(sprint(show, joinpath(dirname(@__FILE__), "usr"))); recursive = true)` to delete the old binary and then run `Pkg.build($(sprint(show, "HttpParser")))` again.")
         return false
     end
+    return true
 end
 
 libhttp_parser = library_dependency("libhttp_parser", aliases=aliases,
