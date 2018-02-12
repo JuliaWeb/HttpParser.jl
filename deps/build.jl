@@ -3,7 +3,7 @@ using Compat
 
 @BinDeps.setup
 
-version=v"2.7.1"
+version=v"2.8.0"
 
 aliases = []
 if is_windows()
