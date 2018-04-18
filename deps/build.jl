@@ -34,10 +34,11 @@ if is_unix()
     src_url = "https://github.com/nodejs/http-parser/archive/$src_arch"
     src_dir = "http-parser-$version"
 
-    target = "libhttp_parser.$(Libdl.dlext)"
-    targetdwlfile = joinpath(BinDeps.downloadsdir(libhttp_parser),src_arch)
-    targetsrcdir = joinpath(BinDeps.srcdir(libhttp_parser),src_dir)
-    targetlib    = joinpath(BinDeps.libdir(libhttp_parser),target)
+    pretarget = "libhttp_parser.$(Libdl.dlext)"
+    target = Compat.Sys.islinux() ? "$pretarget.$version" : "libhttp_parser.$version.$(Libdl.dlext)"
+    targetdwlfile = joinpath(BinDeps.downloadsdir(libhttp_parser), src_arch)
+    targetsrcdir  = joinpath(BinDeps.srcdir(libhttp_parser), src_dir)
+    targetlib     = joinpath(BinDeps.libdir(libhttp_parser), pretarget)
 
     provides(SimpleBuild,
         (@build_steps begin
@@ -52,8 +53,8 @@ if is_unix()
                     FileRule(targetlib, @build_steps begin
                         ChangeDirectory(BinDeps.srcdir(libhttp_parser))
                         CreateDirectory(dirname(targetlib))
-                        MakeTargets(["-C",src_dir,"library"], env=Dict("SONAME"=>target))
-                        `cp $src_dir/$target.$version $targetlib`
+                        MakeTargets(["-C",src_dir,"library"], env=Dict("SONAME"=>pretarget))
+                        `cp $src_dir/$target $targetlib`
                     end)
                 end
             end
