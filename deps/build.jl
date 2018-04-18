@@ -44,7 +44,6 @@ if is_unix()
             CreateDirectory(BinDeps.downloadsdir(libhttp_parser))
             FileDownloader(src_url, targetdwlfile)
             FileUnpacker(targetdwlfile,BinDeps.srcdir(libhttp_parser),targetsrcdir)
-            PatchStep
             @build_steps begin
                 CreateDirectory(BinDeps.libdir(libhttp_parser))
                 @build_steps begin
