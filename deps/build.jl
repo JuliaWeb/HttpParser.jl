@@ -4,7 +4,7 @@ using Compat.Libdl
 
 @BinDeps.setup
 
-version=v"2.7.1"
+version=v"2.8.1"
 
 aliases = []
 if is_windows()
@@ -39,15 +39,6 @@ if is_unix()
     targetsrcdir = joinpath(BinDeps.srcdir(libhttp_parser),src_dir)
     targetlib    = joinpath(BinDeps.libdir(libhttp_parser),target)
 
-    patchfile = joinpath(BinDeps.depsdir(libhttp_parser), "patches", "pull-357.patch")
-    if version == v"2.7.1" && !isfile(joinpath(targetsrcdir, "http_parser.c.orig"))
-        PatchStep = (@build_steps begin
-            pipeline(`cat $patchfile`, `patch --verbose -b -p1 -d $targetsrcdir`)
-        end)
-    else
-        PatchStep = (@build_steps begin end)
-    end
-
     provides(SimpleBuild,
         (@build_steps begin
             CreateDirectory(BinDeps.downloadsdir(libhttp_parser))
@@ -63,7 +54,7 @@ if is_unix()
                         ChangeDirectory(BinDeps.srcdir(libhttp_parser))
                         CreateDirectory(dirname(targetlib))
                         MakeTargets(["-C",src_dir,"library"], env=Dict("SONAME"=>target))
-                        `cp $src_dir/$target $targetlib`
+                        `cp $src_dir/$target.$version $targetlib`
                     end)
                 end
             end
