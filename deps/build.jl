@@ -64,7 +64,7 @@ end
 # Windows
 if is_windows()
     provides(Binaries,
-         URI("https://s3.amazonaws.com/julialang/bin/winnt/extras/libhttp_parser_2_7_1.zip"),
+         URI("https://s3.amazonaws.com/julialang/bin/winnt/extras/libhttp_parser_2_8_1.zip"),
          libhttp_parser, os = :Windows)
 end
 
