@@ -1,8 +1,8 @@
 using HttpParser
 using HttpCommon
-using Base.Test
 using Compat
-import Compat: String
+using Compat: @info
+using Compat.Test
 
 FIREFOX_REQ = tuple("GET /favicon.ico HTTP/1.1\r\n",
          "Host: 0.0.0.0=5000\r\n",
@@ -108,18 +108,18 @@ function on_chunk_complete(parser)
     return 0
 end
 
-c_message_begin_cb = cfunction(on_message_begin, HttpParser.HTTP_CB...)
-c_url_cb = cfunction(on_url, HttpParser.HTTP_DATA_CB...)
-c_status_complete_cb = cfunction(on_status_complete, HttpParser.HTTP_CB...)
-c_header_field_cb = cfunction(on_header_field, HttpParser.HTTP_DATA_CB...)
-c_header_value_cb = cfunction(on_header_value, HttpParser.HTTP_DATA_CB...)
-c_headers_complete_cb = cfunction(on_headers_complete, HttpParser.HTTP_CB...)
-c_body_cb = cfunction(on_body, HttpParser.HTTP_DATA_CB...)
-c_message_complete_cb = cfunction(on_message_complete, HttpParser.HTTP_CB...)
-c_body_cb = cfunction(on_body, HttpParser.HTTP_DATA_CB...)
-c_message_complete_cb = cfunction(on_message_complete, HttpParser.HTTP_CB...)
-c_chunk_header_cb = cfunction(on_chunk_header, HttpParser.HTTP_CB...)
-c_chunk_complete_cb = cfunction(on_chunk_complete, HttpParser.HTTP_CB...)
+c_message_begin_cb = @cfunction(on_message_begin, Int, (Ptr{Parser},))
+c_url_cb = @cfunction(on_url, Int, (Ptr{Parser}, Ptr{Cchar}, Csize_t,))
+c_status_complete_cb = @cfunction(on_status_complete, Int, (Ptr{Parser},))
+c_header_field_cb = @cfunction(on_header_field, Int, (Ptr{Parser}, Ptr{Cchar}, Csize_t,))
+c_header_value_cb = @cfunction(on_header_value, Int, (Ptr{Parser}, Ptr{Cchar}, Csize_t,))
+c_headers_complete_cb = @cfunction(on_headers_complete, Int, (Ptr{Parser},))
+c_body_cb = @cfunction(on_body, Int, (Ptr{Parser}, Ptr{Cchar}, Csize_t,))
+c_message_complete_cb = @cfunction(on_message_complete, Int, (Ptr{Parser},))
+c_body_cb = @cfunction(on_body, Int, (Ptr{Parser}, Ptr{Cchar}, Csize_t,))
+c_message_complete_cb = @cfunction(on_message_complete, Int, (Ptr{Parser},))
+c_chunk_header_cb = @cfunction(on_chunk_header, Int, (Ptr{Parser},))
+c_chunk_complete_cb = @cfunction(on_chunk_complete, Int, (Ptr{Parser},))
 
 function init(test::Tuple)
     # reset request
@@ -225,4 +225,4 @@ HttpParser.resume(p)
 ex = HttpParser.HttpParserError(0x1f)
 @test ex.errno == 0x1f
 
-info("All assertions passed!")
+@info "All assertions passed!"

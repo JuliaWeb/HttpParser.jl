@@ -29,7 +29,7 @@ export Parser,
 id_pool = 0
 
 # A composite type that matches bit-for-bit a C struct.
-type Parser
+mutable struct Parser
     # parser + flag = Single byte
     type_and_flags::Cuchar
 
@@ -76,17 +76,17 @@ const HTTP_CB      = (Int, (Ptr{Parser},))
 const HTTP_DATA_CB = (Int, (Ptr{Parser}, Ptr{Cchar}, Csize_t,))
 
 # A composite type that is expecting C functions to be run as callbacks.
-type ParserSettings
-    on_message_begin_cb::Ptr{Void}
-    on_url_cb::Ptr{Void}
-    on_status_complete_cb::Ptr{Void}
-    on_header_field_cb::Ptr{Void}
-    on_header_value_cb::Ptr{Void}
-    on_headers_complete_cb::Ptr{Void}
-    on_body_cb::Ptr{Void}
-    on_message_complete_cb::Ptr{Void}
-    on_chunk_header::Ptr{Void}
-    on_chunk_complete::Ptr{Void}
+mutable struct ParserSettings
+    on_message_begin_cb::Ptr{Nothing}
+    on_url_cb::Ptr{Nothing}
+    on_status_complete_cb::Ptr{Nothing}
+    on_header_field_cb::Ptr{Nothing}
+    on_header_value_cb::Ptr{Nothing}
+    on_headers_complete_cb::Ptr{Nothing}
+    on_body_cb::Ptr{Nothing}
+    on_message_complete_cb::Ptr{Nothing}
+    on_chunk_header::Ptr{Nothing}
+    on_chunk_complete::Ptr{Nothing}
 end
 
 ParserSettings(on_message_begin_cb, on_url_cb, on_status_complete_cb, on_header_field_cb, on_header_value_cb, on_headers_complete_cb, on_body_cb, on_message_complete_cb) = ParserSettings(on_message_begin_cb, on_url_cb, on_status_complete_cb, on_header_field_cb, on_header_value_cb, on_headers_complete_cb, on_body_cb, on_message_complete_cb, C_NULL, C_NULL)
@@ -107,7 +107,7 @@ end
 
 "Intializes the Parser object with the correct memory."
 function http_parser_init(parser::Parser,isserver=true)
-    ccall((:http_parser_init, lib), Void, (Ptr{Parser}, Cint), &parser, !isserver)
+    ccall((:http_parser_init, lib), Nothing, (Ptr{Parser}, Cint), Ref(parser), !isserver)
 end
 
 "Run a request through a parser with specific callbacks on the settings instance."
@@ -128,13 +128,13 @@ end
 
 # Is the request a keep-alive request?
 function http_should_keep_alive(parser::Ptr{Parser})
-    ccall((:http_should_keep_alive, lib), Int, (Ptr{Parser},), Ref(parser))
+    ccall((:http_should_keep_alive, lib), Int, (Ptr{Parser},), Ref(parser, 1))
 end
 
 "Pauses the parser."
-pause(parser::Parser) = ccall((:http_parser_pause,lib), Void, (Ptr{Parser}, Cint), Ref(parser), one(Cint))
+pause(parser::Parser) = ccall((:http_parser_pause,lib), Nothing, (Ptr{Parser}, Cint), Ref(parser), one(Cint))
 "Resumes the parser."
-resume(parser::Parser) = ccall((:http_parser_pause,lib), Void,(Ptr{Parser}, Cint), Ref(parser), zero(Cint))
+resume(parser::Parser) = ccall((:http_parser_pause,lib), Nothing,(Ptr{Parser}, Cint), Ref(parser), zero(Cint))
 "Checks if this is the final chunk of the body."
 isfinalchunk(parser::Parser) = ccall((:http_parser_pause,lib), Cint, (Ptr{Parser},), Ref(parser)) == 1
 
@@ -143,7 +143,7 @@ errno(parser::Parser) = parser.errno_and_upgrade & 0b01111111
 errno_name(errno::Integer) = unsafe_string(ccall((:http_errno_name,lib),Cstring,(Int32,),errno))
 errno_description(errno::Integer) = unsafe_string(ccall((:http_errno_description,lib),Cstring,(Int32,),errno))
 
-immutable HttpParserError <: Exception
+struct HttpParserError <: Exception
     errno::Int32
     HttpParserError(errno::Integer) = new(Int32(errno))
 end
@@ -160,7 +160,7 @@ show(io::IO, err::HttpParserError) = print(io,"HTTP Parser Exception: ",errno_na
                  UF_USERINFO         = Cint(6),
                  UF_MAX              = Cint(7))
 
-immutable ParserUrl
+struct ParserUrl
     field_set::UInt16 # Bitmask of (1 << UF_*) values
     port::UInt16      # Converted UF_PORT string
     field_data::NTuple{Cint(UF_MAX)*2, UInt16}
