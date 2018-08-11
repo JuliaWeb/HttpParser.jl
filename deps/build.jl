@@ -29,7 +29,7 @@ end
 libhttp_parser = library_dependency("libhttp_parser", aliases=aliases,
                                      validate=validate_httpparser)
 
-if is_unix()
+if Sys.isunix()
     src_arch = "v$version.zip"
     src_url = "https://github.com/nodejs/http-parser/archive/$src_arch"
     src_dir = "http-parser-$version"
@@ -62,7 +62,7 @@ if is_unix()
 end
 
 # Windows
-if is_windows()
+if Sys.iswindows()
     provides(Binaries,
          URI("https://s3.amazonaws.com/julialang/bin/winnt/extras/libhttp_parser_2_8_1.zip"),
          libhttp_parser, os = :Windows)
