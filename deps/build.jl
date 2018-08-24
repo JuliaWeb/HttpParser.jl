@@ -42,7 +42,7 @@ if is_unix()
     patchfile = joinpath(BinDeps.depsdir(libhttp_parser), "patches", "pull-357.patch")
     if version == v"2.7.1" && !isfile(joinpath(targetsrcdir, "http_parser.c.orig"))
         PatchStep = (@build_steps begin
-            pipeline(`cat $patchfile`, `patch --verbose -b -p1 -d $targetsrcdir`)
+            pipeline(`cat $patchfile`, `patch -b -p1 -d $targetsrcdir`)
         end)
     else
         PatchStep = (@build_steps begin end)
