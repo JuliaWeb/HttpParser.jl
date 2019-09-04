@@ -1,3 +1,5 @@
+*This project is deprecated. Please use [HTTP.jl](https://github.com/JuliaWeb/HTTP.jl)* 
+
 # HttpParser.jl
 
 This package provides a Julia wrapper around Joyent's [http-parser](https://github.com/joyent/http-parser) library (v2.7.1).
